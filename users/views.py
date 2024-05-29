@@ -1,9 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect,HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib import messages
+from .forms import CustomUserCreationForm
+
 def index(request):
   if not request.user.is_authenticated:
     return HttpResponseRedirect(reverse("login"))
@@ -34,24 +36,18 @@ def logout_view(request):
   })
 def sign_view(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        confirm_password = request.POST['confirm_password']
-        
-        if password != confirm_password:
-            messages.error(request, "Passwords do not match")
-            return render(request, "users/sign.html")
-        
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already taken")
-            return render(request, "users/sign.html")
-
-        user = User.objects.create_user(username=username, password=password)
-        user.save()
-        
-        login(request, user)
-        return HttpResponseRedirect(reverse("index"))  # Redirect to a home page or another page after successful sign up
-    return render(request, "users/sign.html")
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, error)
+    else:
+        form = CustomUserCreationForm()
+    return render(request, "users/sign.html", {'form': form})
 
 
   #if request.method=="POST":
