@@ -36,3 +36,13 @@ class CustomUserCreationForm(UserCreationForm):
             self.add_error('password2', "Passwords do not match.")
 
         return cleaned_data
+# forms.py
+# users/forms.py
+from django import forms
+from .models import Product
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name', 'price', 'phone_number', 'state', 'city']
+

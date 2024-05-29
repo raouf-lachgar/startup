@@ -1,16 +1,38 @@
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect,HttpResponse
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib import messages
 from .forms import CustomUserCreationForm
-
+from .models import Product
+from .forms import ProductForm
 def index(request):
-  if not request.user.is_authenticated:
-    return HttpResponseRedirect(reverse("login"))
-  return render(request, "users/user.html")
-  
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("login"))
+    
+    products = Product.objects.all().order_by('-created_at')
+    
+    return render(request, "users/user.html", {'products': products})
+
+def profile_view(request):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("login"))
+    
+    user_products = Product.objects.filter(user=request.user).order_by('-created_at')
+    
+    return render(request, "users/profile.html", {'products': user_products})
+
+def delete_product_view(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    if product.user != request.user:
+        messages.error(request, "You do not have permission to delete this product.")
+        return redirect('profile')
+    
+    product.delete()
+    messages.success(request, "Product deleted successfully.")
+    return redirect('profile')
+
 def login_view(request):
     
     if request.method == "POST":
@@ -48,27 +70,21 @@ def sign_view(request):
     else:
         form = CustomUserCreationForm()
     return render(request, "users/sign.html", {'form': form})
-
-
-  #if request.method=="POST":
-    username = request.POST["username"]
-    password = request.POST["password"]
-    email = request.POST["email"]
-    user = User.objects.create_user(username, email , password)
-    user.save()
-    user = authenticate(request, username=username, password=password)
+def submit_product_view(request):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("login"))
     
-    if user is not None:
-        login(request, user)
-        return HttpResponseRedirect(reverse("index"))
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.user = request.user
+            product.save()
+            messages.success(request, "Product submitted successfully!")
+            return redirect('index')
+        else:
+            messages.error(request, "There was an error with your submission. Please check the form and try again.")
     else:
-        return render(request, "users/login.html",{
-          "message" : "username or password is wrong"
-        })
+        form = ProductForm()
     
-
-      
-    return HttpResponseRedirect(reverse("index"))
-
-  #return render(request, "users/sign.html")"""
-
+    return render(request, "users/submit_product.html", {'form': form})

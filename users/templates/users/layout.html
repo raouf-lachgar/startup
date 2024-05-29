@@ -1,11 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>dz auto</title>
+    <title>Product Submission</title>
+    <style>
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .product {
+            border: 1px solid #ccc;
+            padding: 16px;
+            margin: 16px;
+            width: calc(33.333% - 32px);
+            box-sizing: border-box;
+        }
+    </style>
 </head>
 <body>
-  {% block content %}{% endblock %}
+    <header>
+        <nav>
+            <a href="{% url 'index' %}">Home</a>
+            <a href="{% url 'submit_product' %}">Submit Product</a>
+            <a href="{% url 'profile' %}">profile</a>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
 </body>
 </html>
