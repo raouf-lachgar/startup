@@ -10,12 +10,19 @@
             <p>Phone: {{ product.phone_number }}</p>
             <p>State: {{ product.get_state_display }}</p>
             <p>City: {{ product.city }}</p>
+            <p>Condition: {{ product.condition }}</p>
+            <p>Quantity: {{ product.quantity }}</p>
+            <p>Sales: {{ product.sales }}</p>
             <p>Posted by: {{ product.user.username }}</p>
             <p>Posted on: {{ product.created_at }}</p>
+            <form method="POST" action="{% url 'buy_product' product.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary" {% if product.quantity == 0 %}disabled{% endif %}>Buy</button>
+            </form>
         </div>
         {% endfor %}
     {% else %}
-        <p>No products found. <a href="{% url 'submit_product' %}">Submit a product</a></p>
+        <p>No products found.</p>
     {% endif %}
 </div>
 {% endblock %}

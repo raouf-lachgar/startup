@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
+
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
     first_name = forms.CharField(required=True)
@@ -42,10 +43,7 @@ from django import forms
 from .models import Product
 
 class ProductForm(forms.ModelForm):
-    description = forms.CharField(widget=forms.Textarea)  # Adding description field
-
     class Meta:
         model = Product
-        fields = ['name', 'price', 'phone_number', 'state', 'city', 'description']  # Include description in fields list
-
+        fields = ['name', 'price', 'phone_number', 'state', 'city', 'description', 'quantity']
 

@@ -1,3 +1,4 @@
+<!-- users/templates/users/product_detail.html -->
 {% extends "users/layout.html" %}
 {% block content %}
 <div class="container mt-5">
@@ -9,6 +10,8 @@
             <p><strong>State:</strong> {{ product.get_state_display }}</p>
             <p><strong>City:</strong> {{ product.city }}</p>
             <p><strong>Description:</strong> {{ product.description }}</p>
+            <p><strong>Quantity Available:</strong> {{ product.quantity }}</p>
+            <p><strong>Sales:</strong> {{ product.sales }}</p>
             <p><strong>Posted by:</strong> {{ product.user.username }}</p>
             <p><strong>Posted on:</strong> {{ product.created_at }}</p>
             <a href="{% url 'index' %}" class="btn btn-secondary">Back to All Offers</a>

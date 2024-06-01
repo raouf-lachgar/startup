@@ -20,7 +20,10 @@ class Product(models.Model):
     city = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    quantity = models.PositiveIntegerField(default=0)  # New field
+    sales = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
+
 

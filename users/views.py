@@ -7,13 +7,24 @@ from django.contrib import messages
 from .forms import CustomUserCreationForm
 from .models import Product
 from .forms import ProductForm
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from .models import Product
+from .forms import ProductForm
+
 def index(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("login"))
     
-    products = Product.objects.all().order_by('-created_at')
+    query = request.GET.get('q')
+    if query:
+        products = Product.objects.filter(name__icontains=query)
+    else:
+        products = Product.objects.all()
     
-    return render(request, "users/user.html", {'products': products})
+    context = {'products': products}
+    return render(request, 'users/user.html', context)
 
 def profile_view(request):
     if not request.user.is_authenticated:
@@ -103,3 +114,11 @@ def edit_product(request, product_id):
         form = ProductForm(instance=product)
 
     return render(request, 'users/edit_product.html', {'form': form, 'product': product})
+def buy_product(request, product_id):
+    product = Product.objects.get(id=product_id)
+    if product.quantity > 0:
+        product.quantity -= 1
+        product.sales += 1
+        product.save()
+    return redirect('index')
+
