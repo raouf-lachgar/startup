@@ -9,5 +9,6 @@ urlpatterns = [
     path('submit/', submit_product_view, name='submit_product'),
     path('profile/', views.profile_view, name='profile'),
     path('delete/<int:product_id>/', views.delete_product_view, name='delete_product'),
-    
+      path('product/<int:product_id>/', views.product_detail_view, name='product_detail'),
+      path('edit/<int:product_id>/', views.edit_product, name='edit_product'),
 ]

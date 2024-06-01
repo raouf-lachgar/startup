@@ -1,3 +1,4 @@
+<!-- users/templates/users/profile.html -->
 {% extends "users/layout.html" %}
 {% block content %}
 <h2>My Profile - My Offers</h2>
@@ -18,6 +19,7 @@
             <p>State: {{ product.get_state_display }}</p>
             <p>City: {{ product.city }}</p>
             <p>Posted on: {{ product.created_at }}</p>
+            <a href="{% url 'edit_product' product.id %}">Edit</a> | <!-- Add Edit link -->
             <a href="{% url 'delete_product' product.id %}">Delete</a>
         </div>
         {% endfor %}

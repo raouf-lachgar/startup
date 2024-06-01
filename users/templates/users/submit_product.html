@@ -1,5 +1,6 @@
 {% extends "users/layout.html" %}
 {% block content %}
+
 <h2>Submit Product</h2>
 {% if messages %}
     <ul>
@@ -13,4 +14,5 @@
     {{ form.as_p }}
     <button type="submit">Submit</button>
 </form>
+
 {% endblock %}

@@ -88,3 +88,18 @@ def submit_product_view(request):
         form = ProductForm()
     
     return render(request, "users/submit_product.html", {'form': form})
+def product_detail_view(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    return render(request, 'users/product_detail.html', {'product': product})
+def edit_product(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')  # Redirect to profile page after editing
+    else:
+        form = ProductForm(instance=product)
+
+    return render(request, 'users/edit_product.html', {'form': form, 'product': product})

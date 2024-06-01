@@ -42,7 +42,10 @@ from django import forms
 from .models import Product
 
 class ProductForm(forms.ModelForm):
+    description = forms.CharField(widget=forms.Textarea)  # Adding description field
+
     class Meta:
         model = Product
-        fields = ['name', 'price', 'phone_number', 'state', 'city']
+        fields = ['name', 'price', 'phone_number', 'state', 'city', 'description']  # Include description in fields list
+
 
