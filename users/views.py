@@ -2,7 +2,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect,HttpResponse
 from django.shortcuts import render,redirect,get_object_or_404
 from django.urls import reverse
-from django.contrib.auth.models import User
 from django.contrib import messages
 from .forms import CustomUserCreationForm
 from .models import Product
@@ -10,8 +9,11 @@ from .forms import ProductForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from .models import Product
+#no longer predifined djnago user ;)
+from .models import Product,custom_user
 from .forms import ProductForm
+#external db for willayas
+from algerography.models import Wilaya
 
 def index(request):
     if not request.user.is_authenticated:
@@ -81,6 +83,27 @@ def sign_view(request):
     else:
         form = CustomUserCreationForm()
     return render(request, "users/sign.html", {'form': form})
+#added view ! (deleting user,update profile)
+def userDelete_view(request):
+    user = custom_user.objects.get(pk=request.user.id)
+    Post = Product.objects.filter(user=request.user.id)
+    Post.delete()
+    logout(request)
+    user.delete()
+    return HttpResponseRedirect(reverse('index'))
+def profileUpdate_view(request):
+    if request.method == 'POST':
+      username = request.POST['username']
+      phone_num = request.POST['phone_num']
+      user = custom_user.objects.get(pk=request.user.id)
+      user.username = username
+      user.phone_num = phone_num
+      if request.FILES:
+        profile_pic = request.FILES['profile_pic']
+        user.profile_pic = profile_pic
+      user.save()
+      alert = True
+      return HttpResponseRedirect(reverse('profile'))
 def submit_product_view(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("login"))
@@ -98,7 +121,7 @@ def submit_product_view(request):
     else:
         form = ProductForm()
     
-    return render(request, "users/submit_product.html", {'form': form})
+    return render(request, "users/submit_product.html", {'form': form , 'city':Wilaya})
 def product_detail_view(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     return render(request, 'users/product_detail.html', {'product': product})

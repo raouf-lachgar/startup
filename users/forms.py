@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.models import User
+from .models import custom_user
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -11,8 +11,8 @@ class CustomUserCreationForm(UserCreationForm):
     last_name = forms.CharField(required=True)
 
     class Meta:
-        model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
+        model = custom_user
+        fields = ('username', 'email', 'first_name', 'last_name','phone_num', 'password1', 'password2')
 
     def clean_password1(self):
         password = self.cleaned_data.get('password1')
@@ -24,7 +24,7 @@ class CustomUserCreationForm(UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
+        if custom_user.objects.filter(email=email).exists():
             raise ValidationError("This email address is already in use.")
         return email
 
