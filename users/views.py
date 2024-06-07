@@ -10,7 +10,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 #no longer predifined djnago user ;)
-from .models import Product,custom_user
+from .models import Product,custom_user,media_files
 from .forms import ProductForm
 #external db for willayas
 from algerography.models import Wilaya
@@ -23,7 +23,7 @@ def index(request):
     if query:
         products = Product.objects.filter(name__icontains=query)
     else:
-        products = Product.objects.all()
+        products = Product.objects.prefetch_related('media_files_set').all()
     
     context = {'products': products}
     return render(request, 'users/user.html', context)
@@ -114,6 +114,10 @@ def submit_product_view(request):
             product = form.save(commit=False)
             product.user = request.user
             product.save()
+            if 'media' in request.FILES:
+             for file in request.FILES.getlist('media'):
+              media = media_files(product_id=product , path=file)
+              media.save()
             messages.success(request, "Product submitted successfully!")
             return redirect('index')
         else:
